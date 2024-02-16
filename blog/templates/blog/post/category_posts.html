@@ -1,0 +1,147 @@
+{% extends parent_template|default:"main/navbar.html" %}
+{% load static %}
+
+
+{% block content %}
+<!-- /navigation -->
+<section class="section">
+  <div class="py-4"></div>
+  <div class="container">
+    <div class="row">
+      <div
+        class="col-lg-8  mb-5 mb-lg-0">
+        <h1 class="h2 mb-4">Showing posts from <mark>{{ category.name|title }}</mark></h1>
+        {% if category.category_posts.all %}
+      {% for post in category.category_posts.all %}
+        <article class="card mb-4">
+          <div class="post-slider">
+          {% for image in post.images.all %}
+            <img src="{{ image.image.url }}" class="card-img-top" alt="post-thumb">
+          {% endfor %}
+          </div>
+          <div class="card-body">
+            <h3 class="mb-3"><a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title|title }}</a></h3>
+            <ul class="card-meta list-inline">
+              <li class="list-inline-item">
+                <a href="{% url "author" post.author.id %}" class="card-meta-author">
+                <img src="{% static "images/john-doe.jpg" %}">
+                <span>{{ post.author.last_name }} {{ post.author.first_name }}</span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                {% with words=post.body|wordcount %}
+                  {% with reading_time=words|divisibleby:180|add:1 %}
+                      <i class="ti-timer"></i>{{ reading_time }} Min To Read
+                   {% endwith %}
+               {% endwith %}
+              </li>
+              <li class="list-inline-item">
+                <i class="ti-calendar"></i>{{ post.created|date:"j M, Y" }}
+              </li>
+              <li class="list-inline-item">
+                <ul class="card-meta-tag list-inline">
+               {% for tag in post.tag.all|slice:4 %}
+                  <li class="list-inline-item"><a href="{% url "tag_posts" tag.slug %}">{{ tag.name|title }}</a></li>
+                {% endfor %}
+                </ul>
+              </li>
+            </ul>
+            <p>{{ post.body|safe|linebreaks|truncatewords:60 }}</p>
+            <a href="{{ post.get_absolute_url }}" class="btn btn-outline-primary">Read More</a>
+          </div>
+        </article>
+     {% endfor %}
+      </div>
+{% else %}
+    
+<div class="py-3"></div>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 mb-4">
+        <h1 class="h2 mb-4">
+          <mark>
+            
+          </mark>
+        </h1>
+      </div>
+      <div class="col-lg-10 text-center">
+        <img class="mb-5" src="{% static "images/no-search-found.svg" %}" alt="">
+        <h3>No Posts related to this Category</h3>
+      </div>
+    </div>
+  </div>
+{% endif %} I
+      <aside class="col-lg-4 sidebar-inner">
+  <!-- Search -->
+{% include "main/search_component.html" %}
+
+  <!-- about me -->
+  {% include "main/about_me.html" %}
+  
+  <!-- Promotion -->
+  
+
+  <!-- authors -->
+{% include "main/authors_component.html" %}
+  <!-- Search -->
+  
+  <div class="widget">
+    <h4 class="widget-title"><span>Never Miss A News</span></h4>
+    <form action="#!" method="post" name="mc-embedded-subscribe-form" target="_blank"
+      class="widget-search">
+      <input class="mb-3" id="search-query" name="s" type="search" placeholder="Your Email Address">
+      <i class="ti-email"></i>
+      <button type="submit" class="btn btn-primary btn-block" name="subscribe">Subscribe now</button>
+      <div style="position: absolute; left: -5000px;" aria-hidden="true">
+        <input type="text" name="b_463ee871f45d2d93748e77cad_a0a2c6d074" tabindex="-1">
+      </div>
+    </form>
+  </div>
+
+  <!-- categories -->
+  {% include "main/categories_component.html" %}
+<!-- tags -->
+  {% include "main/tags_component.html" %}
+  <!-- recent post -->
+  <div class="widget">
+    <h4 class="widget-title">Recent Post</h4>
+{% for post in latest_posts %}
+    <!-- post-item -->
+    <article class="widget-card">
+      <div class="d-flex">
+      {% for image in post.images.all|slice:1 %}
+        <img class="card-img-sm" src="{{ image.image.url }}" %}">
+      {% endfor %}
+        <div class="ml-3">
+          <h5><a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title|title }}.</a></h5>
+          <ul class="card-meta list-inline mb-0">
+            <li class="list-inline-item mb-0">
+              <i class="ti-calendar"></i>{{ post.publish|date:"j, M, Y"}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </article>
+    
+   {% endfor %}
+  </div>
+
+  <!-- Social -->
+  <div class="widget">
+    <h4 class="widget-title"><span>Social Links</span></h4>
+    <ul class="list-inline widget-social">
+      <li class="list-inline-item"><a href="#"><i class="ti-facebook"></i></a></li>
+      <li class="list-inline-item"><a href="#"><i class="ti-twitter-alt"></i></a></li>
+      <li class="list-inline-item"><a href="#"><i class="ti-linkedin"></i></a></li>
+      <li class="list-inline-item"><a href="#"><i class="ti-github"></i></a></li>
+      <li class="list-inline-item"><a href="#"><i class="ti-youtube"></i></a></li>
+    </ul>
+  </div>
+</aside>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

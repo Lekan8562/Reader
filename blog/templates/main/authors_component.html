@@ -1,0 +1,15 @@
+{% load static %}
+  <div class="widget widget-author">
+    <h4 class="widget-title">Authors</h4>
+    {% for author in authors %}
+    <div class="media align-items-center">
+      <div class="mr-3">
+        <img class="widget-author-image" src="{{ author.avatar.url }}">
+      </div>
+      <div class="media-body">
+        <h5 class="mb-1"><a class="post-title" href="{% url "author" author.id %}">{{ author.last_name|title }} {{ author.first_name|title }}</a></h5>
+        <span>Author | {{ author.bio|truncatewords:10 }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>

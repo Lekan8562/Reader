@@ -1,0 +1,173 @@
+{% extends parent_template|default:"main/navbar.html" %}
+{% load static %}
+{% block content %}
+
+<div class="py-4"></div>
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class=" col-lg-9   mb-5 mb-lg-0">
+        <article>
+          <div class="post-slider mb-4">
+            <img src="{% static "images/post/post-2.jpg" }" class="card-img" alt="post-thumb">
+          </div>
+          
+          <h1 class="h2">{{ post.title|title }}</h1>
+          <ul class="card-meta my-3 list-inline">
+            <li class="list-inline-item">
+              <a href="{% url "author" post.author.id %}" class="card-meta-author">
+                <img src="{{ post.author.avatar.url }}">
+                <span>{{ post.author.last_name }} {{ post.author.first_name }}</span>
+              </a>
+            </li>
+            <li class="list-inline-item">
+                {% with words=post.body|wordcount %}
+                  {% with reading_time=words|divisibleby:180|add:1 %}
+                      <i class="ti-timer"></i>{{ reading_time }} Min To Read
+                  {% endwith %}
+               {% endwith %}
+           </li>
+           {% if post.updated != post.created %}
+            <li class="list-inline-item">
+              <i class="ti-calendar"></i>Posted {{ post.created|date:"j M, Y" }} {{ post.created|time|upper }}
+              </li>
+              <li class="list-inline-item">
+                 <i class="ti-calendar"></i>Updated {{ post.updated|date:"j M, Y" }} {{ post.updated|time|upper }}
+              </li> 
+           {% else %}
+            <li class="list-inline-item">
+              <i class="ti-calendar"></i>Posted {{ post.created|date:"j M, Y" }} 
+              </li>
+              <li class="list-inline-item">
+                    <i class="fas fa-clock"></i>{{ post.created|time|upper }}
+              </li>
+          {% endif %}
+            
+            <li class="list-inline-item">
+              <ul class="card-meta-tag list-inline">
+            {% for tag in post.tag.all|slice:4 %}
+                <li class="list-inline-item"><a href="{% url "tag_posts" tag.slug %}">{{ tag.name|title }}</a></li>
+            {% endfor %}
+              </ul>
+            </li>
+          </ul>
+          {% if post.images.all %}
+                <img src="{{ post.images.first.image.url }}" alt="{{ post.images.first.caption }}" style="max-width: 100%; height: auto;">
+         
+          {% endif %}
+          <div class="content"><p>{{ post.body|safe|linebreaks }}</p>
+          </div>
+        </article>
+        <ul class="card-meta-tag list-inline">
+            {% for tag in post.tag.all|slice:4 %}
+                <li class="list-inline-item"><a href="{% url "tag_posts" tag.slug %}">{{ tag.name|title }}</a></li>
+            {% endfor %}
+              </ul>
+      </div>
+      
+     <div class="col-lg-9 col-md-12">
+    <div class="mb-5 border-top mt-4 pt-5">
+        <h3 class="mb-4">Comment{{ comments.count|pluralize }}({{ comments.count }})</h3>
+        
+        {% for comment in comments %}
+        <div class="media d-block d-sm-flex mb-4 pb-4">
+            <a class="d-inline-block mr-2 mb-3 mb-md-0" href="#">
+                <img src="{% static "images/post/user-01.jpg" %}" class="mr-3 rounded-circle" alt="">
+            </a>
+            <div class="media-body">
+                <a href="#!" class="h4 d-inline-block mb-3">{{ comment.name }}</a>
+                <p>{{ comment.body|linebreaks }}</p>
+                <span class="text-black-800 mr-3 font-weight-600">{{ comment.created|date:"F j, Y" }}</span>
+                <a class="text-primary font-weight-600" href="{% url "reply" comment.id %}">Reply</a>
+                
+                <a class="text-primary font-weight-600" href="{% url "delete_comment" comment.id %}">Delete</a>
+                <!-- Nested loop for replies -->
+                <br>
+                {% for reply in comment.replies.all %}
+                <div class="media d-block d-sm-flex">
+                    <div class="d-inline-block mr-2 mb-3 mb-md-0" href="#">
+                        <img class="mr-3" src="{% static "images/post/arrow.png" %}" alt="">
+                        <a href="#!"><img src="{% static "images/post/user-02.jpg" %}" class="mr-3 rounded-circle" alt=""></a>
+                    </div>
+                    <div class="media-body">
+                        <a href="#!" class="h4 d-inline-block mb-3">{{ reply.name|title }}</a>
+                        <p>{{ reply.body|safe }}</p>
+                        <span class="text-black-800 mr-3 font-weight-600">{{ reply.created|date:"F j, Y" }}</span>
+                        <a class="text-primary font-weight-600" href="{% url "reply" comment.id %}">Reply</a>
+                        <a class="text-primary font-weight-600" href="{% url "delete_comment" comment.id %}">Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- End of nested loop for replies -->
+                
+            </div>
+        </div>
+        {% endfor %}
+  
+
+          <div>
+              <h3 class="mb-4">Leave a Reply</h3>
+              <form method="POST" action="{% url "post_comment" post.id %}">
+              {% csrf_token %}
+                  <div class="row">
+                      <div class="form-group col-md-12">
+                          <textarea class="form-control shadow-none" name="body" rows="7" required></textarea>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <input class="form-control shadow-none" type="text" placeholder="Name" name="name" required>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <input class="form-control shadow-none" type="email" placeholder="Email" name="email" required>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <input class="form-control shadow-none" type="url" placeholder="Website">
+                          <p class="font-weight-bold valid-feedback">OK! You can skip this field.</p>
+                      </div>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Comment Now</button>
+              </form>
+          </div>
+      </div>
+      
+    </div>
+  <br  >
+  <hr  >
+
+        <div class="col-lg-9 col-md-12">
+    <div class="mb-5 border-top mt-4 pt-5">
+    <a href="{% url "post_share" post.id %}">
+        <h3 class="mb-4">Share this Post</h3>
+    </a>
+        </div>
+        </div>
+  <hr  />
+  
+  
+        <h2 class="h5 section-title">Related Posts</h2>
+    {% for post in similar_posts %}
+        <article class="card mb-4">
+          <div class="card-body d-flex">
+          {% for image in post.images.all|slice:1 %}
+            <img class="card-img-sm" src="{{ image.image.url }}">
+          {% endfor %}
+            <div class="ml-3">
+              <h4><a href="{{ post.get_absolute_url }}" class="post-title">{{ post.title|title }}</a></h4>
+              <ul class="card-meta list-inline mb-0">
+                <li class="list-inline-item mb-0">
+                  <i class="ti-calendar"></i>{{ post.created|date:"j M, Y" }}
+                </li>
+                <li class="list-inline-item mb-0">
+                  {% with words=post.body|wordcount %}
+                      {% with reading_time=words|divisibleby:180|add:1 %}
+                          <i class="ti-timer"></i>{{ reading_time }} Min To Read
+                      {% endwith %}
+                 {% endwith %}
+                </li>
+              </ul>
+            </div>
+         </div>
+        </article>
+    {% endfor %}
+        </div>
+</section>
+{% endblock %}

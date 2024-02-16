@@ -1,0 +1,9 @@
+{% load static %}
+  <div class="widget widget-categories">
+    <h4 class="widget-title"><span>Categories</span></h4>
+    <ul class="list-unstyled widget-list">
+    {% for category in categories %}
+      <li><a href="{% url "category_posts" category.slug %}" class="d-flex">{{ category.name|title }} <small class="ml-auto">({{ category.category_posts.count }})</small></a></li>
+     {% endfor %}
+    </ul>
+  </div>
