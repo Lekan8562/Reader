@@ -1,0 +1,85 @@
+{% extends parent_template|default:"main/navbar.html" %}
+{% load static %}
+
+{% block content %}
+<div class="py-3"></div>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 mb-4">
+        <h1 class="h2 mb-4">Search results for 
+          <mark>{{ query }}</mark>
+        </h1>
+      </div>
+      <div class="col-lg-10">
+  {% if posts %}
+      {% for post in posts %}
+        <article class="card mb-4">
+          <div class="row card-body">
+            <div class="col-md-4 mb-4 mb-md-0">
+              <div class="post-slider slider-sm">
+              {% for image in post.images.all %}
+                <img src="{{ image.image.url }}" class="card-img" alt="post-thumb" style="height:200px; object-fit: cover;">
+               {% endfor %}
+              </div>
+            </div>
+            <div class="col-md-8">
+              <h3 class="h4 mb-3"><a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title|title }}</a></h3>
+              <ul class="card-meta list-inline">
+               <li class="list-inline-item">
+          <a href="{% url "author" post.author.id %}" class="card-meta-author">
+          <img src="{{ post.author.avatar.url }}" alt="John Doe">
+          <span>{{ post.author.last_name }} {{ post.author.first_name }}</span>
+          </a>
+      </li>
+      <li class="list-inline-item">
+      {% with words=post.body|wordcount %}
+          {% with reading_time=words|divisibleby:180|add:1 %}
+          <i class="ti-timer"></i>{{ reading_time }} Min To Read
+          {% endwith %}
+       {% endwith %}
+      </li>
+      <li class="list-inline-item">
+          <i class="ti-calendar"></i>{{ post.created|date:"j M, Y" }}
+      </li>
+      <li class="list-inline-item">
+          <ul class="card-meta-tag list-inline">
+        {% for tag in post.tag.all|slice:4 %}
+          <li class="list-inline-item"><a href="{% url "tag_posts" tag.slug %}">{{ tag.name }}</a></li>
+        {% endfor %}
+          </ul>
+      </li>
+      </ul>
+      <p>{{ post.body|safe|linebreaks|truncatewords:20 }}</p>
+      <a href="{{ post.get_absolute_url }}" class="btn btn-outline-primary">Read More</a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+  {% else %}
+      
+<div class="py-3"></div>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 mb-4">
+        <h1 class="h2 mb-4">
+          <mark>
+            
+          </mark>
+        </h1>
+      </div>
+      <div class="col-lg-10 text-center">
+        <img class="mb-5" src="{% static "images/no-search-found.svg" %}" alt="">
+        <h3>Search Not Found</h3>
+      </div>
+    </div>
+  </div>
+{% endif %} I
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
